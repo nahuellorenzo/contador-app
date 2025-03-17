@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Contador con Persistencia en Base de Datos
 
-## Getting Started
+Este proyecto es una aplicación web desarrollada con **Next.js 15.2.2**, **Drizzle ORM** y **SQLite**, que implementa un contador con persistencia en una base de datos relacional.
 
-First, run the development server:
+## 🚀 Características
+- Contador con valores almacenados en **SQLite**.
+- Persistencia de datos entre sesiones.
+- Botones para incrementar y decrementar el contador.
+- Backend manejado con **Server Actions** en Next.js.
+- Estilos con **TailwindCSS**.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🔧 Instalación y Configuración
+1. **Clonar el repositorio:**
+   ```sh
+   git clone https://github.com/nahuellorenzo/contador-app.git
+   cd contador-app
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Instalar dependencias:**
+   ```sh
+   npm install
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. **Configurar variables de entorno:**
+   Crea un archivo `.env` en la raíz del proyecto y agrega:
+   ```env
+   DB_FILE_NAME=./src/db/database.sqlite
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. **Generar la base de datos y migraciones:**
+   ```sh
+   npx drizzle-kit generate
+   npx drizzle-kit migrate
+   ```
 
-## Learn More
+5. **Iniciar el servidor de desarrollo:**
+   ```sh
+   npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+La aplicación estará disponible en `http://localhost:3000`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📌 Decisiones Técnicas
+1. **Next.js 15.2.2**: Se eligió por su soporte para Server Actions, facilitando la comunicación con la base de datos sin necesidad de API endpoints tradicionales.
+2. **Drizzle ORM con SQLite**: Drizzle proporciona un ORM ligero y tipado para TypeScript, y SQLite permite una configuración sencilla sin necesidad de un servidor externo.
+3. **TypeScript**: El código está desarrollado en TypeScript para una mejor seguridad y mantenimiento.
+4. **TailwindCSS**: Se usó para agilizar la implementación del diseño.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📝 Notas Importantes
+- El archivo `.env` **no se sube al repositorio** por razones de seguridad. Si el evaluador necesita ejecutar el proyecto, debe crearlo manualmente siguiendo las instrucciones.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Cualquier duda o sugerencia, ¡no dudes en contactarme! 😊
