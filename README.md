@@ -1,11 +1,13 @@
 # Contador con Persistencia en Base de Datos
 
-Este proyecto es una aplicación web desarrollada con **Next.js 15.2.2**, **Drizzle ORM** y **SQLite**, que implementa un contador con persistencia en una base de datos relacional.
+Este proyecto es una aplicación web desarrollada con **Next.js 15.2.2**, **Drizzle ORM** y **SQLite**, que implementa un contador con persistencia en una base de datos relacional, almacenando un historial de cambios tambien en la base de datos y exportando el historial a PDF cuando se lo requiera.
 
 ## 🚀 Características
-- Contador con valores almacenados en **SQLite**.
+- Contador con valor almacenado en **SQLite**.
 - Persistencia de datos entre sesiones.
-- Botones para incrementar y decrementar el contador.
+- Botones para incrementar, decrementar y resetear el contador.
+- Historial de cambios
+- Exportacion a PDF
 - Backend manejado con **Server Actions** en Next.js.
 - Estilos con **TailwindCSS**.
 
@@ -24,7 +26,7 @@ Este proyecto es una aplicación web desarrollada con **Next.js 15.2.2**, **Driz
 3. **Configurar variables de entorno:**
    Crea un archivo `.env` en la raíz del proyecto y agrega:
    ```env
-   DB_FILE_NAME=./src/db/database.sqlite
+   DB_FILE_NAME=file:./src/app/db/database.sqlite
    ```
 
 4. **Generar la base de datos y migraciones:**
@@ -46,8 +48,12 @@ La aplicación estará disponible en `http://localhost:3000`.
 3. **TypeScript**: El código está desarrollado en TypeScript para una mejor seguridad y mantenimiento.
 4. **TailwindCSS**: Se usó para agilizar la implementación del diseño.
 
+## 🔄 Funcionalidad Adicional Implementada
+- Implementación de un historial de cambios indicando la acción que se ejecuto en el contador y el número en el que quedo seteado junto con la fecha y hora en que se ejecuto dicha acción. Ademas en caso de requerirlo el historial puede ser eliminado.
+- Exportacion del historial de cambios a PDF, conteniendo todo el historial con una fila por accion junto con su fecha correspondiente.
+
 ## 📝 Notas Importantes
-- El archivo `.env` **no se sube al repositorio** por razones de seguridad. Si el evaluador necesita ejecutar el proyecto, debe crearlo manualmente siguiendo las instrucciones.
+- El archivo `.env` **no se sube al repositorio** por razones de seguridad. Si se necesita ejecutar el proyecto, debe crearlo manualmente siguiendo las instrucciones.
 
 ---
 
