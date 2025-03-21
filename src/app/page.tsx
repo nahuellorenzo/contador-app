@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useOptimistic, startTransition  } from "react"
 import { Minus, Plus, RotateCcw, FileDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getContador, incrementar, decrementar, resetear, getHistorial, borrarHistorial } from "./api/actions"
+import { Loader, LoaderHistorial } from "@/components/ui/loader"
 
 type JsPDFType = typeof import("jspdf").default
 
@@ -12,37 +13,82 @@ export default function Contador() {
   const [contador, setContador] = useState<number | null>(null)
   const [historial, setHistorial] = useState<{ accion: string; timestamp: string }[]>([])
   const [isExporting, setIsExporting] = useState(false)
+  //const [optimisticContador, setOptimisticContador] = useOptimistic(contador)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    getContador().then(setContador)
-    getHistorial().then(setHistorial ?? [])
+    const fetchData = async () => {
+      const contadorValor = await getContador()
+      setContador(contadorValor)
+      const historialData = await getHistorial()
+      setHistorial(historialData ?? [])
+      setIsLoading(false);
+    };
+
+    fetchData();
   }, [])
 
   const handleIncrementar = async () => {
+    
+    /*startTransition(() => {
+      setOptimisticContador((prev) => (prev ?? 0) + 1)
+    })*/
+
     try {
+      setIsLoading(true)
       const valor = await incrementar()
       setContador(valor)
+
+      /*startTransition(() => {
+        setOptimisticContador(valor)
+      })*/
+
       await actualizarHistorial()
+      setIsLoading(false)
     } catch (error) {
       console.error("Error al incrementar:", error)
     }
   }
 
   const handleDecrementar = async () => {
+
+    /*startTransition(() => {
+      setOptimisticContador((prev) => (prev ?? 0) - 1)
+    })*/
+
     try {
+      setIsLoading(true)
       const valor = await decrementar()
       setContador(valor)
+
+      /*startTransition(() => {
+        setOptimisticContador(valor)
+      })*/
+
       await actualizarHistorial()
+      setIsLoading(false)
     } catch (error) {
       console.error("Error al decrementar:", error)
     }
   }
 
   const handleResetear = async () => {
+
+    /*startTransition(() => {
+      setOptimisticContador(0)
+    })*/
+
     try {
+      setIsLoading(true)
       const valor = await resetear()
       setContador(valor)
+
+      /*startTransition(() => {
+        setOptimisticContador(valor)
+      })*/
+
       await actualizarHistorial()
+      setIsLoading(false)
     } catch (error) {
       console.error("Error al resetear:", error)
     }
@@ -54,9 +100,11 @@ export default function Contador() {
   }
 
   const limpiarHistorial = async () => {
-    try{
+    try {
       setHistorial([])
+      setIsLoading(true)
       await borrarHistorial()
+      setIsLoading(false)
     }
     catch (error) {
       console.error("Error al limpiar historial:", error)
@@ -135,16 +183,18 @@ export default function Contador() {
         </CardHeader>
         <CardContent className="space-y-8">
           <div className="flex items-center justify-center">
-            <div className="relative flex h-40 w-40 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/10 shadow-inner">
-              <span className="text-5xl font-bold text-primary">{contador}</span>
-            </div>
+            {isLoading ? <Loader /> :
+              <div className="relative flex h-40 w-40 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/10 shadow-inner">
+                <span className="text-5xl font-bold text-primary">{contador}</span>
+              </div>
+            }
           </div>
-
           <div className="grid grid-cols-3 gap-4">
             <Button
               variant="outline"
               size="lg"
               onClick={handleDecrementar}
+              disabled={isLoading}
               className="flex h-16 items-center justify-center text-lg transition-all hover:scale-105 hover:bg-destructive hover:text-destructive-foreground"
             >
               <Minus className="mr-2 h-5 w-5" />
@@ -155,6 +205,7 @@ export default function Contador() {
               variant="outline"
               size="lg"
               onClick={handleResetear}
+              disabled={isLoading}
               className="flex h-16 items-center justify-center text-lg transition-all hover:scale-105"
             >
               <RotateCcw className="mr-2 h-5 w-5" />
@@ -165,6 +216,7 @@ export default function Contador() {
               variant="outline"
               size="lg"
               onClick={handleIncrementar}
+              disabled={isLoading}
               className="flex h-16 items-center justify-center text-lg transition-all hover:scale-105 hover:bg-primary hover:text-primary-foreground"
             >
               <Plus className="mr-2 h-5 w-5" />
@@ -181,13 +233,13 @@ export default function Contador() {
                       variant="outline"
                       size="sm"
                       onClick={exportarAPDF}
-                      disabled={isExporting || historial.length === 0}
+                      disabled={isExporting || historial.length === 0 || isLoading}
                       className="text-xs"
                     >
                       <FileDown className="mr-1 h-3 w-3" />
                       {isExporting ? "Exportando..." : "Exportar PDF"}
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={limpiarHistorial} className="text-xs">
+                    <Button variant="ghost" size="sm" onClick={limpiarHistorial} className="text-xs" disabled={isLoading}>
                       Vaciar Historial
                     </Button>
                   </>
@@ -196,23 +248,24 @@ export default function Contador() {
             </div>
 
             <div className="max-h-48 overflow-y-auto rounded-md border bg-card p-2">
-              {historial.length === 0 ? (
-                <p className="py-4 text-center text-sm text-muted-foreground">Sin acciones por ahora</p>
-              ) : (
-                <ul className="space-y-2">
-                  {historial.map((item, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center justify-between rounded-md bg-muted/50 px-3 py-2 text-sm"
-                    >
-                      <span>
-                        <span className="font-medium">{item.accion}</span>
-                      </span>
-                      <span className="text-xs text-muted-foreground">{item.timestamp}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              {isLoading ? <div className="py-4 flex items-center justify-center"><LoaderHistorial /></div> :
+                historial.length === 0 ? (
+                  <p className="py-4 text-center text-sm text-muted-foreground">Sin acciones por ahora</p>
+                ) : (
+                  <ul className="space-y-2">
+                    {historial.map((item, index) => (
+                      <li
+                        key={index}
+                        className="flex items-center justify-between rounded-md bg-muted/50 px-3 py-2 text-sm"
+                      >
+                        <span>
+                          <span className="font-medium">{item.accion}</span>
+                        </span>
+                        <span className="text-xs text-muted-foreground">{item.timestamp}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
             </div>
           </div>
         </CardContent>
