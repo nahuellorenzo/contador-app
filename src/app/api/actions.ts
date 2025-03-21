@@ -5,13 +5,13 @@ import { eq, desc } from 'drizzle-orm'
 import { contador, contadorHistorial } from "./../db/schema"
 
 export async function getContador() {
-    const resultado = await db.select().from(contador).where(eq(contador.id, 1 )).get()
+    const resultado = await db.select().from(contador).where(eq(contador.id, 1 ))
     
-    if (!resultado) {
-        await db.insert(contador).values({ id: 1, valor: 0 }).run()
+    if (resultado.length === 0) {
+        await db.insert(contador).values({ valor: 0 })
     }
 
-    return resultado?.valor ?? 0
+    return resultado[0]?.valor ?? 0
 }
 
 export async function incrementar() {
@@ -19,10 +19,10 @@ export async function incrementar() {
     const timestamp = new Date().toLocaleString()
     await db.update(contador)
     .set({ valor: actual + 1 })
-    .where(eq(contador.id, 1)).run()
+    .where(eq(contador.id, 1))
 
     await db.insert(contadorHistorial)
-    .values({accion: "Incremento a " + (actual + 1), timestamp}).run()
+    .values({accion: "Incremento a " + (actual + 1), timestamp})
 
     return actual + 1
 }
@@ -32,10 +32,10 @@ export async function decrementar() {
     const timestamp = new Date().toLocaleString()
     await db.update(contador)
     .set({ valor: actual - 1 })
-    .where(eq(contador.id, 1)).run()
+    .where(eq(contador.id, 1))
 
     await db.insert(contadorHistorial)
-    .values({accion: "Decremento a " + (actual - 1), timestamp}).run()
+    .values({accion: "Decremento a " + (actual - 1), timestamp})
 
     return actual - 1
 }
@@ -44,19 +44,19 @@ export async function resetear() {
     const timestamp = new Date().toLocaleString()
     await db.update(contador)
     .set({ valor: 0 })
-    .where(eq(contador.id, 1)).run()
+    .where(eq(contador.id, 1))
 
     await db.insert(contadorHistorial)
-    .values({accion: "Reseteo a 0", timestamp}).run()
+    .values({accion: "Reseteo a 0", timestamp})
 
     return 0
 }
 
 export async function getHistorial() {
-    const result =  await db.select().from(contadorHistorial).orderBy(desc(contadorHistorial.id)).all()
+    const result =  await db.select().from(contadorHistorial).orderBy(desc(contadorHistorial.id))
     return result ?? []
 }
 
 export async function borrarHistorial() {
-    await db.delete(contadorHistorial).run()
+    await db.delete(contadorHistorial)
 }
