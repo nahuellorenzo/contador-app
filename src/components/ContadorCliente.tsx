@@ -23,7 +23,17 @@ export function ContadorCliente({ contadorInicial, historial, incrementar, decre
     const handleAction = async (action: () => Promise<number>) => {
 
         startTransition(() => {
-            setOptimisticContador(contadorInicial => contadorInicial + 1)
+            switch (action) {
+                case incrementar:
+                    setOptimisticContador((contadorInicial) => contadorInicial + 1)
+                    break
+                case decrementar:
+                    setOptimisticContador((contadorInicial) => contadorInicial - 1)
+                    break
+                case resetear:
+                    setOptimisticContador(0)
+                    break
+            }
         })
 
         try {
