@@ -2,7 +2,9 @@ import React from 'react';
 
 export const Loader = () => {
   return (
-    <div className="loader h-40 w-40 border-t-2 rounded-full border-gray-500 bg-gray-300 animate-spin aspect-square flex justify-center items-center text-yellow-700" />
+    <div className="flex items-center justify-center">
+      <div className="loader h-40 w-40 border-t-2 rounded-full border-gray-500 bg-gray-300 animate-spin aspect-square flex justify-center items-center text-yellow-700" />
+    </div>
   );
 }
 
