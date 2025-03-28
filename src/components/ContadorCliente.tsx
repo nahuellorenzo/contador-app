@@ -5,17 +5,14 @@ import { Minus, Plus, RotateCcw, FileDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { exportarAPDF } from "./ExportPDF"
 import { useOptimistic, startTransition } from "react"
+import { incrementar, decrementar, resetear, borrarHistorial } from "@/app/api/actions"
 
 interface ContadorClienteProps {
     contadorInicial: number
     historial: { accion: string; timestamp: string }[]
-    incrementar: () => Promise<number>
-    decrementar: () => Promise<number>
-    resetear: () => Promise<number>
-    borrarHistorial: () => Promise<void>
 }
 
-export function ContadorCliente({ contadorInicial, historial, incrementar, decrementar, resetear, borrarHistorial}: ContadorClienteProps) {
+export function ContadorCliente({ contadorInicial, historial}: ContadorClienteProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [isExporting, setIsExporting] = useState(false)
     const [optimisticContador, setOptimisticContador] = useOptimistic(contadorInicial)
